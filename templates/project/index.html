@@ -1,0 +1,136 @@
+{% extends 'manage_root.html' %}
+{% load staticfiles %}
+{% block header-pro %}
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="{% static 'js/html5.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+{% endblock %}
+{% block body %}
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">项目管理</a>
+        <a>
+          <cite>项目列表</cite></a>
+      </span>
+        <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
+           href="javascript:location.replace(location.href);" title="刷新">
+            <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body operate">
+        <div class="layui-btn-group">
+            {% if perms.project.delete_project %}
+                <button class="layui-btn layui-btn-danger" data-type="getCheckData"><i class="layui-icon"></i>批量删除
+                </button>
+            {% endif %}
+            {% if perms.project.add_project %}
+                <button class="layui-btn" onclick="x_admin_show('添加项目','{% url 'manage:project:add' %}',800,600)"><i
+                        class="layui-icon"></i>添加项目
+                </button>
+            {% endif %}
+            <div class="layui-input-inline">
+                <input type="text" id="project_key" name="project_key" placeholder="请输入关键字"
+                       autocomplete="off" class="layui-input col-md-4" style="padding-right: 5px">
+            </div>
+            <button class="layui-btn" data-type="researchProject"><i class="fa fa-search"
+                                                                     aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <table class="layui-hide" id="tab_project" lay-filter="project"></table>
+        <script type="text/html" id="bar_project">
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="detail">查看</a>
+            {% if perms.project.change_project %}
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            {% endif %}
+            {% if perms.project.delete_project %}
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            {% endif %}
+        </script>
+    </div>
+    <script>
+        layui.use('table', function () {
+            var table = layui.table;
+            var tableObj = table.render({
+                elem: '#tab_project'
+                , url: '{% url 'manage:project:project_list' %}'
+                , cols: [[
+                    {checkbox: true, fixed: true}
+                    , {field: 'name', title: '项目名称'}
+                    , {field: 'charger', title: '负责人'}
+                    , {field: 'start_time', title: '开始时间'}
+                    , {field: 'end_time', title: '结束时间'}
+                    , {field: 'version', title: '当前版本'}
+                    , {field: 'gitlab', title: '代码地址'}
+                    , {field: 'tag', title: '当前标记'}
+                    , {field: 'update_time', title: '更新时间'}
+                    , {field: 'status', title: '状态'}
+                    , {field: 'right', title: '操作', align: 'center', toolbar: '#bar_project'}
+                ]]
+                , id: 'project_table'
+                , page: true
+                , height: 'full-335'
+                , loading: false
+            });
+
+            table.on('tool(project)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'detail') {
+                    x_admin_show('项目详情', 'detail/' + data.id, 800, 600)
+                } else if (obj.event === 'del') {
+                    var sids = [data.id];
+                    del_project(tableObj, sids);
+
+                } else if (obj.event === 'edit') {
+                    x_admin_show('编辑工具', 'edit/' + data.id, 800, 600);
+                }
+            });
+
+            var $ = layui.$, active = {
+                getCheckData: function () {
+                    var checkStatus = table.checkStatus('project_table')
+                        , data = checkStatus.data;
+                    if (data.length == 0) {
+                        layer.msg('您还没选择哟！', {icon: 5});
+                    } else {
+                        var sids = [];
+                        for (var i = 0; i < data.length; i++) {
+                            sids.push(data[i].id);
+                        }
+                        del_project(tableObj, sids);
+                    }
+                },
+                researchProject: function () {
+                    var key = $('#project_key').val();
+                    tableObj.reload({
+                        where: {
+                            key: key
+                        }
+                    })
+                }
+            };
+
+            $('.operate .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        });
+
+        function del_project(tableObj, sids) {
+            layer.confirm('真的删除吗？', function (index) {
+                $.ajax({
+                    url: '{% url 'manage:project:delete' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {'sids[]': sids},
+                    success: function (data) {
+                        layer.msg(data.msg, data.status ? {icon: 6} : {icon: 5});
+                        tableObj.reload();
+                    }
+                });
+            });
+        }
+
+    </script>
+{% endblock %}

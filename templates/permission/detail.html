@@ -1,0 +1,26 @@
+{% extends 'manage_root.html' %}
+{% block body %}
+    <div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>{{ permission.name }}</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <th width="30%">权限名称</th>
+                        <td><span>{{ permission.name }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>权限编码</td>
+                        <td>{{ permission.codename }}</td>
+                    </tr>
+                    <tr>
+                        <td>所属模块</td>
+                        <td>{{ permission.content_type.model }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'manage_root.html' %}
+{% block body %}
+    <body class="login-bg">
+    <div class="login">
+        <div class="message">工具管理系统 · 用户登录</div>
+        <div id="darkbannerwrap"></div>
+
+        <form method="post" class="layui-form">
+            <input name="username" placeholder="用户名" type="text" lay-verify="required" class="layui-input">
+            <hr class="hr15">
+            <input name="password" lay-verify="required" placeholder="密码" type="password" class="layui-input">
+            <hr class="hr15">
+            <input value="登 录" lay-submit lay-filter="login" style="width:100%;" type="submit">
+            <hr class="hr20">
+        </form>
+    </div>
+
+    <script>
+        $(function () {
+            layui.use('form', function () {
+                var form = layui.form;
+                form.on('submit(login)', function (input) {
+                    $.ajax({
+                        url: '{% url 'manage:check_in' %}',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: input.field,
+                        success: function (data) {
+                            layer.msg(data.msg, data.status ? {icon: 6} : {icon: 5});
+                            if (data.status) {
+                                location.href = '{% url 'manage:index' %}'
+                            }
+                        }
+                    });
+                    return false;
+                });
+            });
+        })
+    </script>
+    <!-- 底部结束 -->
+{% endblock %}

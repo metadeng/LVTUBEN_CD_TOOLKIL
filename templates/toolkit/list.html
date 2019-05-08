@@ -1,0 +1,71 @@
+{% extends 'toolkit_root.html' %}
+{% load staticfiles %}
+{% block body %}
+    <div class="content-wrapper">
+        <div class="container">
+            <div class="row pad-botm">
+                <div class="col-md-12">
+                    <h4 class="header-line">{{ plate.summary }}</h4>
+                </div>
+            </div>
+            {% if plate.toolbar.all %}
+                {% for t in plate.toolbar.all %}
+                    {% if forloop.counter|divisibleby:4 %}
+                        <div class="row">
+                            <div class="col-md-3 col-sm-3 col-xs-6">
+                                <a href="{% if t.https %}https{% else %}http{% endif %}://{{ t.server }}:{{ t.port }}/"
+                                   target="_blank" title="{{ t.name }}"
+                                   style="text-decoration: none;">
+                                    <div class="alert alert-info back-widget-set text-center"
+                                         style="border-color: {{ t.color }};color: {{ t.color }}">
+                                        {% if t.avatar %}
+                                            <img src="{{ MEDIA_URL }}{{ t.avatar }}" style="width: 128px;height: 76px">
+                                        {% else %}
+                                            <i class="{{ t.icon }} fa-5x"></i>
+                                        {% endif %}
+                                        <h3>{{ t.name }}</h3>
+                                        {{ t.alias }}
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col-md-3 col-sm-3 col-xs-6">
+                            <a href="{% if t.https %}https{% else %}http{% endif %}://{{ t.server }}:{{ t.port }}/"
+                               target="_blank" title="{{ t.name }}"
+                               style="text-decoration: none;">
+                                <div class="alert back-widget-set text-center"
+                                     style="border-color:{{ t.color }};color: {{ t.color }}">
+                                    {% if t.avatar %}
+                                        <img src="{{ MEDIA_URL }}{{ t.avatar }}" style="width: 128px;height: 76px">
+                                    {% else %}
+                                        <i class="{{ t.icon }} fa-5x"></i>
+                                    {% endif %}
+                                    <h3>{{ t.name }}</h3>
+                                    {{ t.alias }}
+                                </div>
+                            </a>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="alert alert-success back-widget-set text-center" style="padding: 100px">
+                            <i class="fa fa-history fa-5x"></i>
+                            <h3>工具开发中.....</h3>
+                            See You Soon
+                            <br>
+                            <br>
+                            <br>
+                            <p class="pull-right">-- <label>{{ plate.prefix|safe }}</label></p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+
+        </div>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'manage_root.html' %}
+{% block header-pro %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+            outline: none;
+        }
+
+        select {
+            width: 100%;
+            height: auto;
+            padding-left: 10px;
+            font-size: 14px;
+        }
+
+        select option {
+            margin: 5px auto;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>{{ user.username }}</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <th width="30%">用户名</th>
+                        <td><span>{{ user.username }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>邮箱</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <td>所属用户组</td>
+                        <td>{% if user.groups.all %}
+                            {{ user.groups.all.first.name }}
+                        {% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>姓氏</td>
+                        <td>{{ user.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>名字</td>
+                        <td>{{ user.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>超级管理员</td>
+                        <td>{{ user.is_superuser }}</td>
+                    </tr>
+                    <tr>
+                        <td>允许登录</td>
+                        <td>{{ user.is_staff }}</td>
+                    </tr>
+                    <tr>
+                        <td>用户状态</td>
+                        <td>{{ user.is_active }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>特殊权限</td>
+                        <td style="padding: 0px">
+                            <select size="5" readonly="readonly" style="border: 0px">
+                                {% if user.user_permissions.all %}
+                                    {% for p in user.user_permissions.all %}
+                                        <option value="{{ p.id }}">{{ p.content_type.app_label }}
+                                            | {{ p.content_type.model }}
+                                            | {{ p.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+
+                            </select>
+
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+{% endblock %}

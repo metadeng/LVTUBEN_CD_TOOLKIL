@@ -1,0 +1,53 @@
+{% extends 'manage_root.html' %}
+{% block header-pro %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+            outline: none;
+        }
+
+        select {
+            width: 100%;
+            height: auto;
+            padding-left: 10px;
+            font-size: 14px;
+        }
+
+        select option {
+            margin: 5px auto;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>{{ group.name }}</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <th>用户组名称</th>
+                        <td><span>{{ group.name }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>用户组权限</td>
+                        <td style="padding: 0px">
+
+                            <select size="20" readonly="readonly" style="border: 0px">
+                                {% for p in group.permissions.all %}
+                                    <option value="{{ p.id }}">{{ p.content_type.app_label }}
+                                        | {{ p.content_type.model }}
+                                        | {{ p.name }}</option>
+                                {% endfor %}
+                            </select>
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+{% endblock %}

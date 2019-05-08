@@ -1,0 +1,142 @@
+{% extends 'manage_root.html' %}
+{% load staticfiles %}
+{% block header-pro %}
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="{% static 'js/html5.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+{% endblock %}
+{% block body %}
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">用户管理</a>
+        <a>
+          <cite>用户列表</cite></a>
+      </span>
+        <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
+           href="javascript:location.replace(location.href);" title="刷新">
+            <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body operate">
+        <div class="layui-btn-group">
+            {% if perms.auth.delete_user %}
+                <button class="layui-btn layui-btn-danger" data-type="getCheckData"><i class="layui-icon"></i>批量删除
+                </button>
+            {% endif %}
+            {% if perms.auth.add_user %}
+                <button class="layui-btn" onclick="x_admin_show('添加用户','{% url 'manage:user_add' %}',800,600)"><i
+                        class="layui-icon"></i>添加用户
+                </button>
+            {% endif %}
+
+            <div class="layui-input-inline">
+                <input type="text" id="user_key" name="user_key" placeholder="请输入关键字"
+                       autocomplete="off" class="layui-input col-md-4" style="padding-right: 5px">
+            </div>
+            <button class="layui-btn" data-type="researchPlate"><i class="fa fa-search"
+                                                                   aria-hidden="true"></i>
+            </button>
+
+        </div>
+
+
+        <table class="layui-hide" id="tab_user" lay-filter="user"></table>
+        <script type="text/html" id="bar_user">
+            {% if perms.auth.grant_user %}
+                <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="grant">授权</a>
+            {% endif %}
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="detail">查看</a>
+            {% if perms.auth.change_user %}
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            {% endif %}
+            {% if perms.auth.delete_user %}
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            {% endif %}
+        </script>
+    </div>
+    <script>
+        layui.use(['table', 'laytpl'], function () {
+            var table = layui.table;
+            var laytpl = layui.laytpl;
+            var tableObj = table.render({
+                elem: '#tab_user'
+                , url: '{% url 'manage:user_list' %}'
+                , cols: [[
+                    {checkbox: true, fixed: true}
+                    , {field: 'username', title: '用户名'}
+                    , {field: 'group', title: '用户组'}
+                    , {field: 'email', title: '邮箱'}
+                    , {field: 'is_superuser', title: '超级管理员'}
+                    , {field: 'is_staff', title: '允许登录'}
+                    , {field: 'is_active', title: '激活状态'}
+                    , {field: 'last_login', title: '上次登录时间'}
+                    , {field: 'right', title: '操作', align: 'center', toolbar: '#bar_user'}
+                ]]
+                , id: 'user_table'
+                , page: true
+                , height: 'full-335'
+                , loading: false
+            });
+
+            table.on('tool(user)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'detail') {
+                    x_admin_show('用户详情', '/manage/user_detail/' + data.id, 800, 600);
+                } else if (obj.event === 'del') {
+                    var sids = [data.id];
+                    del_user(tableObj, sids);
+                } else if (obj.event === 'edit') {
+                    x_admin_show('编辑用户', '/manage/user_edit/' + data.id, 800, 600);
+                } else if (obj.event === 'grant') {
+                    x_admin_show('授权用户特有权限', '/manage/user_grant/' + data.id, 1100, 720);
+                }
+            });
+
+            var $ = layui.$, active = {
+                getCheckData: function () {
+                    var checkStatus = table.checkStatus('user_table')
+                        , data = checkStatus.data;
+                    if (data.length == 0) {
+                        layer.msg('您还没选择哟！', {icon: 5});
+                    } else {
+                        var sids = [];
+                        for (var i = 0; i < data.length; i++) {
+                            sids.push(data[i].id);
+                        }
+                        del_user(tableObj, sids);
+                    }
+                },
+                researchPlate: function () {
+                    var key = $('#user_key').val();
+                    tableObj.reload({
+                        where: {
+                            key: key
+                        }
+                    })
+                }
+            };
+
+            $('.operate .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        });
+
+        function del_user(tableObj, sids) {
+            layer.confirm('真的删除行吗？', function (index) {
+                $.ajax({
+                    url: '{% url 'manage:user_delete' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {'sids': sids},
+                    success: function (data) {
+                        layer.msg(data.msg, data.status ? {icon: 6} : {icon: 5});
+                        tableObj.reload();
+                    }
+                });
+            });
+        }
+
+    </script>
+{% endblock %}

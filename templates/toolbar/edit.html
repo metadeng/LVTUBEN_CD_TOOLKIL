@@ -1,0 +1,256 @@
+{% extends 'manage_root.html' %}
+{% load staticfiles %}
+{% block header-pro %}
+    <link rel="stylesheet" href="{% static 'colorpicker/css/colorpicker.css' %}">
+    <script type="text/javascript" src="{% static 'colorpicker/js/colorpicker.js' %}"></script>
+{% endblock %}
+{% block body %}
+    <div class="x-body">
+        <form class="layui-form" id="uploadForm" enctype="multipart/form-data">
+            <input type="hidden" name="sid" value="{{ toolbar.id }}">
+            <div class="layui-form-item">
+                <label for="name" class="layui-form-label">
+                    <span class="x-red">*</span>工具名称
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name" lay-verify="name|required"
+                           autocomplete="off" class="layui-input" value="{{ toolbar.name }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统唯一的工具名称:1到40个字符
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="plate" class="layui-form-label">
+                    <span class="x-red">*</span>所属导航
+                </label>
+                <div class="layui-input-inline">
+                    <select name="plate" lay-verify="plate|required" lay-search="">
+                        <option value="">输入或选择</option>
+                        {% for p in plates %}
+                            <option value="{{ p.id }}"
+                                    {% if p.id == toolbar.plate.id %}selected{% endif %}>{{ p.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>选择系统版块
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="alias" class="layui-form-label">
+                    <span class="x-red">*</span>英文名称
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="alias" name="alias" lay-verify="alias|required"
+                           autocomplete="off" class="layui-input" value="{{ toolbar.alias }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统展示英文名称:1到40个字符
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="title" class="layui-form-label">
+                    <span class="x-red">*</span>工具标题
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="title" name="title" lay-verify="title"
+                           autocomplete="off" class="layui-input" value="{{ toolbar.title }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>工具锚说明:1到20个字符
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="icon" class="layui-form-label">
+                    工具图标
+                </label>
+                <div class="layui-input-inline">
+                    <div></div>
+                    <input type="text" id="icon" name="icon" lay-verify="icon"
+                           autocomplete="off" class="layui-input" value="{{ toolbar.icon }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统展示图标:Fontawesome图标
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="avatar" class="layui-form-label">
+                    工具图片
+                </label>
+                <div class="layui-input-inline" style="margin-right: 0px;width: 143px">
+                    <input id="lefile" type="file" name="file" style="display:none">
+                    <input type="text" id="avatar" name="avatar" readonly lay-verify="avatar"
+                           autocomplete="off" class="layui-input">
+                </div>
+                <button class="layui-btn" type="button" data-type="selectPicture" style="float:left;margin-left: 0px">
+                    <i class="fa fa-upload" aria-hidden="true"></i>
+                </button>
+                <div class="layui-form-mid layui-word-aux" style="margin-left: 10px">
+                    <span class="x-red">*</span>系统工具展示:仅支持JPEG、PNG、JPG格式
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label for="server" class="layui-form-label">
+                    <span class="x-red">*</span>服务部署
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="server" name="server" lay-verify="server|required"
+                           autocomplete="off" class="layui-input" value="{{ toolbar.server }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>服务器地址:工具部署所在服务器
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="port" class="layui-form-label">
+                    服务端口
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="port" name="port" lay-verify="port"
+                           autocomplete="off" class="layui-input" value="{{ toolbar.port }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>服务端口:默认系统80端口
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="https" class="layui-form-label">
+                    HTTPS请求
+                </label>
+                <div class="layui-input-inline">
+                    <input name="https" id="https" type="checkbox" {% if toolbar.https %}
+                           checked
+                    {% endif %}>
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>限定请求方式
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="stick" class="layui-form-label">
+                    工具置顶
+                </label>
+                <div class="layui-input-inline">
+                    <input name="stick" id="stick" type="checkbox" {% if toolbar.stick %}
+                           checked
+                    {% endif %}>
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统主页置顶排序工具
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="color" class="layui-form-label">
+                    <span class="x-red">*</span>展示颜色
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" name="color" id="color" lay-verify="color|required"
+                           value="{{ toolbar.color }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统主页工具展示颜色
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label for="note" class="layui-form-label">
+                    工具简介
+                </label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入工具简介" id="note" name="note"
+                              class="layui-textarea">{{ toolbar.note }}</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label">
+                </label>
+                <button class="layui-btn" lay-filter="add" lay-submit="">
+                    提交
+                </button>
+            </div>
+        </form>
+    </div>
+    <script>
+        $('#color').ColorPicker({
+            onSubmit: function (hsb, hex, rgb, el) {
+                $(el).val('#' + hex);
+                $(el).ColorPickerHide();
+            },
+            onBeforeShow: function () {
+                $(this).ColorPickerSetColor(this.value);
+            }
+        })
+            .bind('keyup', function () {
+                $(this).ColorPickerSetColor(this.value);
+            });
+        layui.use(['form', 'layer'], function () {
+            $ = layui.jquery;
+            var form = layui.form
+                , layer = layui.layer;
+
+            //监听提交
+            form.on('submit(add)', function (input) {
+                var inputData = new FormData($('#uploadForm')[0]);
+                if ($('#stick').is(':checked')) {
+                    inputData.append("stick", "true");
+                } else {
+                    inputData.append("stick", "false");
+                }
+                if ($('#https').is(':checked')) {
+                    inputData.append("https", "true");
+                } else {
+                    inputData.append("https", "false");
+                }
+                $.ajax({
+                    url: '{% url 'manage:toolbar:update' %}',
+                    type: 'POST',
+                    cache: false,
+                    dataType: 'json',
+                    data: inputData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        layer.alert(data.msg, data.status ? {icon: 6} : {icon: 5}, function () {
+                            if (data.status) {
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                parent.location.reload();
+                            }
+                        });
+                    }
+                })
+                ;
+                return false;
+            });
+
+            var $ = layui.$, active = {
+                selectPicture: function () {
+                    $('input[id=lefile]').click();
+                }
+            };
+
+
+            $('.layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                console.log(type);
+                active[type] ? active[type].call(this) : '';
+            });
+        });
+
+        $('input[id=lefile]').change(function () {
+            var log_path = $(this).val();
+            var log_name = log_path.substring(log_path.lastIndexOf("\\") + 1);
+            $('#avatar').val(log_name);
+        });
+    </script>
+{% endblock %}

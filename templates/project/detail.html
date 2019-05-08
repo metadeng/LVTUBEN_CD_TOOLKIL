@@ -1,0 +1,83 @@
+{% extends 'manage_root.html' %}
+{% block header-pro %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+            outline: none;
+        }
+
+        select {
+            width: 100%;
+            height: auto;
+            padding-left: 10px;
+            font-size: 14px;
+        }
+
+        select option {
+            margin: 5px auto;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>{{ project.name }}</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <th style="width: 30%">项目名称</th>
+                        <td><span>{{ project.name }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>负责人</th>
+                        <td><span>{{ project.charger.username }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>参与者</td>
+                        <td style="padding: 0px">
+
+                            <select size="6" readonly="readonly" style="border: 0px">
+                                {% for u in project.participator.all %}
+                                    <option>{{ u.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>开始时间</th>
+                        <td><span>{{ project.start_time|date }}</span></td>
+                    </tr>
+
+                    <tr>
+                        <th>结束时间</th>
+                        <td><span>{{ project.end_time|date }}</span></td>
+                    </tr>
+
+                    <tr>
+                        <th>版本号</th>
+                        <td><span>{{ project.version }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>代码地址</th>
+                        <td><span>{{ project.gitlab }}</span></td>
+                    </tr>
+
+                    <tr>
+                        <th>标记</th>
+                        <td><span>{{ project.tag }}</span></td>
+                    </tr>
+
+                    <tr>
+                        <th>项目简介</th>
+                        <td><span>{{ project.note }}</span></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+{% endblock %}

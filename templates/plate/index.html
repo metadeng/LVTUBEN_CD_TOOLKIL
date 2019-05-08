@@ -1,0 +1,141 @@
+{% extends 'manage_root.html' %}
+{% load staticfiles %}
+{% block header-pro %}
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="{% static 'js/html5.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+{% endblock %}
+{% block body %}
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">工具管理</a>
+        <a>
+          <cite>导航列表</cite></a>
+      </span>
+        <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
+           href="javascript:location.replace(location.href);" title="刷新">
+            <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body operate">
+        <div class="layui-btn-group">
+            {% if perms.plate.delete_plate %}
+                <button class="layui-btn layui-btn-danger" data-type="getCheckData"><i class="layui-icon"></i>批量删除
+                </button>
+            {% endif %}
+            {% if perms.plate.add_plate %}
+                <button class="layui-btn" onclick="x_admin_show('添加导航','{% url 'manage:plate:add' %}',800,600)"><i
+                        class="layui-icon"></i>添加导航
+                </button>
+            {% endif %}
+            <div class="layui-input-inline">
+                <input type="text" id="plate_key" name="plate_key" placeholder="请输入关键字"
+                       autocomplete="off" class="layui-input col-md-4" style="padding-right: 5px">
+            </div>
+            <button class="layui-btn" data-type="researchPlate"><i class="fa fa-search"
+                                                                   aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <table class="layui-hide" id="tab_plate" lay-filter="plate"></table>
+        <script type="text/html" id="switchTpl">
+            <input type="checkbox" name="sex" value="{{ d.id }}" lay-skin="switch" lay-text="女|男"
+                   lay-filter="sexDemo">
+        </script>
+
+        <script type="text/html" id="bar_plate">
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="detail">查看</a>
+            {% if perms.plate.change_plate %}
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            {% endif %}
+            {% if perms.plate.delete_plate %}
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            {% endif %}
+        </script>
+    </div>
+    <script>
+        layui.use('table', function () {
+            var table = layui.table
+                , form = layui.form;
+
+            var tableObj = table.render({
+                elem: '#tab_plate'
+                , url: '{% url 'manage:plate:plate_list' %}'
+                , cols: [[
+                    {checkbox: true, fixed: true}
+                    , {field: 'name', title: '导航名称'}
+                    , {field: 'prefix', title: '链接前缀'}
+                    , {field: 'icon', title: '导航图标'}
+                    , {field: 'summary', title: '导航摘要'}
+                    , {field: 'update_time', title: '更新时间'}
+                    , {field: 'stick', title: '是否置顶'}
+                    , {field: 'status', title: '导航状态'}
+                    , {field: 'right', title: '操作', align: 'center', toolbar: '#bar_plate'}
+                ]]
+                , id: 'plate_table'
+                , page: true
+                , height: 'full-335'
+                , loading: false
+            });
+
+            table.on('tool(plate)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'detail') {
+                    x_admin_show('导航详情', 'detail/' + data.id, 800, 600);
+                } else if (obj.event === 'del') {
+                    var sids = [data.id];
+                    del_plate(tableObj, sids);
+                } else if (obj.event === 'edit') {
+                    console.log(JSON.stringify(obj.data));
+                    x_admin_show('编辑导航', 'edit/' + data.id, 800, 600);
+                }
+            });
+
+            var $ = layui.$, active = {
+                getCheckData: function () {
+                    var checkStatus = table.checkStatus('plate_table')
+                        , data = checkStatus.data;
+                    if (data.length == 0) {
+                        layer.msg('您还没选择哟！', {icon: 5});
+                    } else {
+                        var sids = [];
+                        for (var i = 0; i < data.length; i++) {
+                            sids.push(data[i].id);
+                        }
+                        del_plate(tableObj, sids);
+                    }
+                },
+                researchPlate: function () {
+                    var key = $('#plate_key').val();
+                    tableObj.reload({
+                        where: {
+                            key: key
+                        }
+                    })
+                }
+            };
+
+            $('.operate .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        });
+
+        function del_plate(tableObj, sids) {
+            layer.confirm('真的删除行吗？', function (index) {
+                $.ajax({
+                    url: '{% url 'manage:plate:delete' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {'sids[]': sids},
+                    success: function (data) {
+                        layer.msg(data.msg, data.status ? {icon: 6} : {icon: 5});
+                        tableObj.reload();
+                    }
+                });
+            });
+        }
+
+    </script>
+{% endblock %}

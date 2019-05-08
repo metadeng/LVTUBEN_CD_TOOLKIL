@@ -1,0 +1,55 @@
+{% extends 'manage_root.html' %}
+{% block body %}
+    <div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>{{ toolbar.name }}</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <th width="30%">工具名称</th>
+                        <td><span>{{ toolbar.name }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>英文名称</td>
+                        <td>{{ toolbar.alias }}</td>
+                    </tr>
+                    <tr>
+                        <td>工具标题</td>
+                        <td>{{ toolbar.title }}</td>
+                    </tr>
+                    <tr>
+                        <td>服务器</td>
+                        <td>{{ toolbar.server }}</td>
+                    </tr>
+                    <tr>
+                        <td>运行端口</td>
+                        <td>{{ toolbar.port }}</td>
+                    </tr>
+                    <tr>
+                        <td>工具图标</td>
+                        <td><span><i class="{{ toolbar.icon }} fa-2x"></i></span></td>
+                    </tr>
+                    <tr>
+                        <td>工具图片</td>
+                        <td>{{ toolbar.avatar }}</td>
+                    </tr>
+                    <tr>
+                        <td>点击量</td>
+                        <td>{{ toolbar.hits }}</td>
+                    </tr>
+                    <tr>
+                        <td>置顶</td>
+                        <td>{{ toolbar.stick }}</td>
+                    </tr>
+                    <tr>
+                        <td>工具简介</td>
+                        <td>{{ toolbar.note }}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+{% endblock %}

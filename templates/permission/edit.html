@@ -1,0 +1,84 @@
+{% extends 'manage_root.html' %}
+{% block body %}
+    <div class="x-body">
+        <form class="layui-form">
+            <input type="hidden" name="sid" value="{{ permission.id }}">
+            <div class="layui-form-item">
+                <label for="name" class="layui-form-label">
+                    <span class="x-red">*</span>权限名称
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name" lay-verify="name|required"
+                           autocomplete="off" class="layui-input" value="{{ permission.name }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统权限名称:1到60个字符
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="codename" class="layui-form-label">
+                    <span class="x-red">*</span>权限编码
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="codename" name="codename" lay-verify="codename|required"
+                           autocomplete="off" class="layui-input" value="{{ permission.codename }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统权限编码 1-40 字符
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="content_type" class="layui-form-label">
+                    <span class="x-red">*</span>所属应用
+                </label>
+                <div class="layui-input-inline">
+                    <select name="content_type" lay-verify="content_type|required" lay-search="">
+                        {% for ct in content_type %}
+                            <option value="{{ ct.id }}"
+                                    {% if ct == permission.content_type %}selected{% endif %}>{{ ct.model }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>选择系统应用导航
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label">
+                </label>
+                <button class="layui-btn" lay-filter="add" lay-submit="">
+                    提交
+                </button>
+            </div>
+        </form>
+    </div>
+    <script>
+        layui.use(['form', 'layer'], function () {
+            $ = layui.jquery;
+            var form = layui.form
+                , layer = layui.layer;
+            //监听提交
+            form.on('submit(add)', function (input) {
+                $.ajax({
+                    url: '{% url 'manage:permission_update' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: input.field,
+                    success: function (data) {
+                        layer.msg(data.msg, data.status ? {icon: 6} : {icon: 5}, function () {
+                            if (data.status) {
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                parent.location.reload();
+                            }
+
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

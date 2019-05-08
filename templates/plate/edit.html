@@ -1,0 +1,123 @@
+{% extends 'manage_root.html' %}
+{% block body %}
+    <div class="x-body">
+        <form class="layui-form">
+            <input type="hidden" name="sid" id="sid" value="{{ plate.id }}">
+            <div class="layui-form-item">
+                <label for="name" class="layui-form-label">
+                    <span class="x-red">*</span>导航名称
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name" lay-verify="name|required" value="{{ plate.name|safe }}"
+                           autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统唯一的导航名称:1到20个字符
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="prefix" class="layui-form-label">
+                    <span class="x-red">*</span>链接前缀
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="prefix" name="prefix" lay-verify="prefix|required"
+                           autocomplete="off" class="layui-input" value="{{ plate.prefix|safe }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统链接前缀:1到12个字符
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="summary" class="layui-form-label">
+                    <span class="x-red">*</span>导航摘要
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="summary" name="summary" lay-verify="summary|required"
+                           autocomplete="off" class="layui-input" value="{{ plate.summary|safe }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>导航展示说明:1到20个字符
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="icon" class="layui-form-label">
+                    导航图标
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="icon" name="icon" required="" lay-verify="icon"
+                           autocomplete="off" class="layui-input" value="{{ plate.icon|safe }}">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统展示图标:Fontawesome图标
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="stick" class="layui-form-label">
+                    导航置顶
+                </label>
+                <div class="layui-input-inline">
+                    <input name="stick" id="stick" type="checkbox" {% if plate.stick %} checked
+                    {% endif %}>
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>站点主页置顶排序导航名称
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label for="note" class="layui-form-label">
+                    导航简介
+                </label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入导航简介" id="note" name="note"
+                              class="layui-textarea">{{ plate.note }}</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label">
+                </label>
+                <button class="layui-btn" lay-filter="update" lay-submit="">
+                    提交
+                </button>
+            </div>
+        </form>
+    </div>
+    <script>
+        layui.use(['form', 'layer'], function () {
+            $ = layui.jquery;
+            var form = layui.form
+                , layer = layui.layer;
+
+            //监听提交
+            form.on('submit(update)', function (input) {
+                if ($('#stick').is(':checked')) {
+                    input.field.stick = true;
+                } else {
+                    input.field.stick = false;
+                }
+                //发异步，把数据提交给后台接口
+                $.ajax({
+                    url: '{% url 'manage:plate:update' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: input.field,
+                    success: function (data) {
+                        layer.msg(data.msg, data.status ? {icon: 6} : {icon: 5}, function () {
+                            if (data.status) {
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                parent.location.reload();
+                            }
+
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

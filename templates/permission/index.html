@@ -1,0 +1,130 @@
+{% extends 'manage_root.html' %}
+{% load staticfiles %}
+{% block header-pro %}
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="{% static 'js/html5.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+{% endblock %}
+{% block body %}
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">用户管理</a>
+        <a>
+          <cite>权限列表</cite></a>
+      </span>
+        <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
+           href="javascript:location.replace(location.href);" title="刷新">
+            <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body operate">
+        <div class="layui-btn-group">
+            {% if perms.auth.delete_permission %}
+                <button class="layui-btn layui-btn-danger" data-type="getCheckData"><i class="layui-icon"></i>批量删除
+                </button>
+            {% endif %}
+            {% if perms.auth.add_permission %}
+                <button class="layui-btn" onclick="x_admin_show('自定义权限','{% url 'manage:permission_add' %}',800,600)"><i
+                        class="layui-icon"></i>自定义权限
+                </button>
+            {% endif %}
+            <div class="layui-input-inline">
+                <input type="text" id="permission_key" name="permission_key" placeholder="请输入关键字"
+                       autocomplete="off" class="layui-input col-md-4" style="padding-right: 5px">
+            </div>
+            <button class="layui-btn" data-type="researchPermission"><i class="fa fa-search"
+                                                                        aria-hidden="true"></i>
+            </button>
+        </div>
+
+
+        <table class="layui-hide" id="tab_permission" lay-filter="permission"></table>
+        <script type="text/html" id="bar_permission">
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="detail">查看</a>
+            {% if perms.auth.change_permission %}
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            {% endif %}
+            {% if perms.auth.delete_permission %}
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            {% endif %}
+        </script>
+    </div>
+    <script>
+        layui.use('table', function () {
+            var table = layui.table;
+            var tableObj = table.render({
+                elem: '#tab_permission'
+                , url: '{% url 'manage:permission_list' %}'
+                , cols: [[
+                    {checkbox: true, fixed: true}
+                    , {field: 'name', title: '权限名称'}
+                    , {field: 'model', title: '所属模块'}
+                    , {field: 'codename', title: '权限编码'}
+                    , {field: 'right', title: '操作', align: 'center', toolbar: '#bar_permission'}
+                ]]
+                , id: 'permission_table'
+                , page: true
+                , height: 'full-335'
+                , loading: false
+            });
+
+            table.on('tool(permission)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'detail') {
+                    x_admin_show('权限详情', '/manage/permission_detail/' + data.id, 800, 600);
+                } else if (obj.event === 'del') {
+                    var sids = [data.id];
+                    del_permission(tableObj, sids);
+                } else if (obj.event === 'edit') {
+                    x_admin_show('编辑自定义权限', '/manage/permission_edit/' + data.id, 800, 600);
+                }
+            });
+
+            var $ = layui.$, active = {
+                getCheckData: function () {
+                    var checkStatus = table.checkStatus('permission_table')
+                        , data = checkStatus.data;
+                    if (data.length == 0) {
+                        layer.msg('您还没选择哟！', {icon: 5});
+                    } else {
+                        var sids = [];
+                        for (var i = 0; i < data.length; i++) {
+                            sids.push(data[i].id);
+                        }
+                        del_permission(tableObj, sids);
+                    }
+                },
+                researchPermission: function () {
+                    var key = $('#permission_key').val();
+                    tableObj.reload({
+                        where: {
+                            key: key
+                        }
+                    })
+                }
+            };
+
+            $('.operate .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        });
+
+        function del_permission(tableObj, sids) {
+            layer.confirm('真的删除行吗？', function (index) {
+                $.ajax({
+                    url: '{% url 'manage:permission_delete' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {'sids[]': sids},
+                    success: function (data) {
+                        layer.msg(data.msg, data.status ? {icon: 6} : {icon: 5});
+                        tableObj.reload();
+                    }
+                });
+            });
+        }
+
+    </script>
+{% endblock %}

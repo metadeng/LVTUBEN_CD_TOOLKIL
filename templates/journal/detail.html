@@ -1,0 +1,35 @@
+{% extends 'manage_root.html' %}
+{% block body %}
+    <div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>{{ log.action_time| date:"Y年m月d日 H:i:s" }}</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <th style="width: 30%">操作日志</th>
+                        <td><span>{{ log.change_message }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>操作用户</th>
+                        <td><span>{{ log.user.username }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>系统应用</th>
+                        <td><span>{{ log.content_type.model }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>用户行为</td>
+                        <td><span>{{ log.action_flag }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>行为对象</th>
+                        <td><span>{{ log.object_repr }}</span></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends 'manage_root.html' %}
+{% block header-pro %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+            outline: none;
+        }
+
+        .selectbox {
+            text-align: center;
+        }
+
+        .selectbox div {
+            float: left;
+        }
+
+        .selectbox .select-bar {
+            padding: 0px;
+        }
+
+        .selectbox .select-bar select {
+            width: 400px;
+            height: 500px;
+            border: 1px #009688 solid;
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .selectbox .select-bar select option {
+            margin: 5px auto;
+        }
+
+        .btn-bar {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .btn-bar p {
+            margin-top: 70px;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="x-body">
+        <div class="layui-form-item">
+            <label for="name" class="layui-form-label">
+                <span class="x-red">*</span>用户组名称
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="name" style="width: 400px" name="name" placeholder="系统用户组名称:1到20个字符"
+                       autocomplete="off" class="layui-input" value="{{ group.name|safe }}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                用户组权限
+            </label>
+            <div class="selectbox">
+                <div class="select-bar">
+                    <select multiple="multiple" id="select1">
+                        {% for p in rest_permission %}
+                            <option value="{{ p.id }}">{{ p.content_type.app_label }} | {{ p.content_type.model }}
+                                | {{ p.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="btn-bar">
+                    <p>
+                        <button id="add" type="button" class="layui-btn layui-btn-sm" title="移动选择项到右侧"><i
+                                class="layui-icon">&#xe602;</i></button>
+                    </p>
+                    <p>
+                        <button id="add_all" type="button" class="layui-btn layui-btn-sm" title="移动选择项到右侧"><i
+                                class="layui-icon">&#xe65b;</i></button>
+                    </p>
+                    <p>
+                        <button id="remove" type="button" class="layui-btn layui-btn-sm" title="移动选择项到右侧"><i
+                                class="layui-icon">&#xe603;</i></button>
+                    </p>
+                    <p>
+                        <button id="remove_all" type="button" class="layui-btn layui-btn-sm" title="移动选择项到右侧"><i
+                                class="layui-icon">&#xe65a;</i></button>
+                    </p>
+                </div>
+
+                <div class="select-bar">
+                    <select multiple="multiple" id="select2">
+                        {% for p in group.permissions.all %}
+                            <option value="{{ p.id }}">{{ p.content_type.app_label }} | {{ p.content_type.model }}
+                                | {{ p.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label">
+                </label>
+                <button class="layui-btn" id="btn_add_group" lay-filter="add" lay-submit="" style="margin-top: 10px">
+                    提交
+                </button>
+            </div>
+        </div>
+        <script>
+            layui.use(['layer'], function () {
+                $ = layui.jquery;
+                var layer = layui.layer;
+                //监听提交
+                $('#btn_add_group').click(function () {
+                    var name = $('#name').val();
+                    var sid = {{ group.id }};
+                    if (name.length < 1 || name.length > 20) {
+                        layer.msg("必填项不能为空", {icon: 5});
+                        $('#name').focus();
+                        return false;
+                    }
+                    var selectedValue = [];
+                    $("#select2 option").each(function () {
+                        selectedValue.push($(this).attr("value"));
+                    });
+                    console.log(selectedValue);
+                    $.ajax({
+                        url: '{% url 'manage:group_update' %}',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {"name": name, "permissions": selectedValue, "sid": sid},
+                        success: function (data) {
+                            layer.msg(data.msg, data.status ? {icon: 6} : {icon: 5}, function () {
+                                if (data.status) {
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(index);
+                                    parent.location.reload();
+                                }
+
+                            });
+                        }
+                    });
+                });
+
+                $('#add').click(function () {
+                    //先判断是否有选中
+                    if (!$("#select1 option").is(":selected")) {
+                        layer.msg("请选择需要添加的权限", {icon: 5});
+                    }
+                    //获取选中的选项，删除并追加给对方
+                    else {
+                        $('#select1 option:selected').appendTo('#select2');
+                    }
+                });
+
+                //移到左边
+                $('#remove').click(function () {
+                    //先判断是否有选中
+                    if (!$("#select2 option").is(":selected")) {
+                        layer.msg("请选择需要移除的权限", {icon: 5});
+                    }
+                    else {
+                        $('#select2 option:selected').appendTo('#select1');
+                    }
+                });
+
+                //全部移到右边
+                $('#add_all').click(function () {
+                    //获取全部的选项,删除并追加给对方
+                    $('#select1 option').appendTo('#select2');
+                });
+
+                //全部移到左边
+                $('#remove_all').click(function () {
+                    $('#select2 option').appendTo('#select1');
+                });
+
+                //双击选项
+                $('#select1').dblclick(function () { //绑定双击事件
+                    //获取全部的选项,删除并追加给对方
+                    $("option:selected", this).appendTo('#select2'); //追加给对方
+                });
+
+                //双击选项
+                $('#select2').dblclick(function () {
+                    $("option:selected", this).appendTo('#select1');
+                });
+            });
+        </script>
+
+
+{% endblock %}

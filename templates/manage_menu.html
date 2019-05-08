@@ -1,0 +1,197 @@
+<div class="left-nav">
+    <div id="side-nav">
+        <ul id="nav">
+            {% if perms.plate %}
+                <li>
+                    <a href="javascript:;">
+                        <i class="layui-icon">&#xe609;</i>
+                        <cite>导航管理</cite>
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a _href="{% url 'manage:plate:index' %}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>导航列表</cite>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if perms.toolbar %}
+                <li>
+                    <a href="javascript:;">
+                        <i class="layui-icon">&#xe631;</i>
+                        <cite>工具管理</cite>
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a _href="{% url 'manage:toolbar:index' %}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>工具列表</cite>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if perms.report %}
+                <li>
+                    <a href="javascript:;">
+                        <i class="layui-icon">&#xe629;</i>
+                        <cite>报告管理</cite>
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a _href="{% url 'manage:report:index' %}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>我的周报</cite>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if perms.parameter %}
+                <li>
+                    <a href="javascript:;">
+                        <i class="layui-icon">&#xe628;</i>
+                        <cite>参数管理</cite>
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a _href="{% url 'manage:parameter:index' %}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>参数列表</cite>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if perms.admin %}
+                <li>
+                    <a href="javascript:;">
+                        <i class="layui-icon">&#xe60a;</i>
+                        <cite>日志管理</cite>
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a _href="{% url 'manage:journal:index' %}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>日志列表</cite>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if perms.project %}
+                <li>
+                    <a href="javascript:;">
+                        <i class="layui-icon">&#xe857;</i>
+                        <cite>项目管理</cite>
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a _href="{% url 'manage:project:index' %}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>项目列表</cite>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if perms.sheet %}
+                <li>
+                    <a href="javascript:;">
+                        <i class="layui-icon">&#xe62a;</i>
+                        <cite>报表管理</cite>
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a _href="{% url 'manage:sheet:index' %}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>报表列表</cite>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if perms.auth %}
+                <li>
+                    <a href="javascript:;">
+                        <i class="iconfont">&#xe726;</i>
+                        <cite>用户管理</cite>
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a _href="{% url 'manage:group' %}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>用户组列表</cite>
+                            </a>
+                        </li>
+                        <li>
+                            <a _href="{% url 'manage:user' %}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>用户列表</cite>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a _href="{% url 'manage:permission' %}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>权限列表</cite>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if perms.server %}
+                <li>
+                    <a href="javascript:;">
+                        <i class="layui-icon">&#xe630;</i>
+                        <cite>服务器管理</cite>
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a _href="{% url 'manage:server:index' %}">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>服务器列表</cite>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            <li>
+                <a href="javascript:;">
+                    <i class="layui-icon">&#xe614;</i>
+                    <cite>系统管理</cite>
+                    <i class="iconfont nav_right">&#xe697;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a _href="{% url 'manage:setting' %}">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>系统设置</cite>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+    </div>
+</div>

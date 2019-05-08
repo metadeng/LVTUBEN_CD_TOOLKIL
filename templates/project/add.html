@@ -1,0 +1,304 @@
+{% extends 'manage_root.html' %}
+{% load staticfiles %}
+{% block header-pro %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+            outline: none;
+        }
+
+        .selectbox {
+            text-align: center;
+        }
+
+        .selectbox div {
+            float: left;
+        }
+
+        .selectbox .select-bar {
+            padding: 0px;
+        }
+
+        .selectbox .select-bar select {
+            width: 190px;
+            height: 200px;
+            border: 1px #e6e6e6 solid;
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            font-size: 14px;
+            display: block;
+        }
+
+        .selectbox .select-bar select option {
+            margin: 2px auto;
+        }
+
+        .btn-bar {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .btn-bar p {
+            margin-top: 15px;
+        }
+
+        .selectbox .layui-form-select {
+            display: none;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="x-body">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label for="name" class="layui-form-label">
+                    <span class="x-red">*</span>项目名称
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name" lay-verify="name|required"
+                           autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统唯一的项目名称:1到40个字符
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="charger" class="layui-form-label">
+                    <span class="x-red">*</span>负责人
+                </label>
+                <div class="layui-input-inline">
+                    <select name="charger" lay-verify="charger|required" lay-search="">
+                        <option value="">输入或选择</option>
+                        {% for c in chargers %}
+                            <option value="{{ c.id }}" {% if request.user.id == c.id %}
+                                    selected
+                            {% endif %}>{{ c.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>选择项目负责人
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    参与者
+                </label>
+                <div class="selectbox">
+                    <div class="select-bar">
+                        <select multiple="multiple" id="select1">
+                            {% for p in participator %}
+                                <option value="{{ p.id }}">{{ p.username }}</option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+
+                    <div class="btn-bar">
+                        <p>
+                            <button id="add" type="button" class="layui-btn layui-btn-sm" title="移动选择项到右侧"><i
+                                    class="layui-icon">&#xe602;</i></button>
+                        </p>
+                        <p>
+                            <button id="add_all" type="button" class="layui-btn layui-btn-sm" title="移动选择项到右侧"><i
+                                    class="layui-icon">&#xe65b;</i></button>
+                        </p>
+                        <p>
+                            <button id="remove" type="button" class="layui-btn layui-btn-sm" title="移动选择项到右侧"><i
+                                    class="layui-icon">&#xe603;</i></button>
+                        </p>
+                        <p>
+                            <button id="remove_all" type="button" class="layui-btn layui-btn-sm" title="移动选择项到右侧"><i
+                                    class="layui-icon">&#xe65a;</i></button>
+                        </p>
+                    </div>
+
+                    <div class="select-bar">
+                        <select multiple="multiple" id="participator"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="start_time" class="layui-form-label">
+                    开始时间
+                </label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" placeholder="开始时间" name="start_time" id="start_time">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统项目开始时间
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="end_time" class="layui-form-label">
+                    结束时间
+                </label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" placeholder="结束时间" name="end_time" id="end_time">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>系统项目结束时间
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="gitlab" class="layui-form-label">
+                    代码地址
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="gitlab" name="gitlab" lay-verify="gitlab"
+                           autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>GitLab代码库地址
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="version" class="layui-form-label">
+                    当前版本
+                </label>
+                <div class="layui-input-inline">
+                    <div></div>
+                    <input type="text" id="version" name="version" lay-verify="version"
+                           autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>项目当前版本号
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="tag" class="layui-form-label">
+                    当前标记
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="tag" name="tag" lay-verify="tag"
+                           autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>里程碑标记
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label for="note" class="layui-form-label">
+                    项目简介
+                </label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入项目简介" id="note" name="note" class="layui-textarea"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label">
+                </label>
+                <button class="layui-btn" lay-filter="add" lay-submit="">
+                    添加
+                </button>
+            </div>
+        </form>
+
+    </div>
+    <script>
+        layui.use(['form', 'layer', 'laydate'], function () {
+            $ = layui.jquery;
+            var form = layui.form
+                , layer = layui.layer
+                , laydate = layui.laydate;
+
+            laydate.render({
+                elem: '#start_time'
+            });
+
+            laydate.render({
+                elem: '#end_time'
+            });
+
+            //监听提交
+            form.on('submit(add)', function (input) {
+                var selectedValue = [];
+                $("#participator option").each(function () {
+                    selectedValue.push($(this).attr("value"));
+                });
+                input.field.participator = selectedValue;
+                $.ajax({
+                    url: '{% url 'manage:project:insert' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: input.field,
+                    success: function (data) {
+                        layer.alert(data.msg, data.status ? {icon: 6} : {icon: 5}, function () {
+                            if (data.status) {
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                parent.location.reload();
+                            }
+                        });
+                    }
+                })
+                ;
+                return false;
+            });
+
+            var $ = layui.$, active = {};
+
+            $('.layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+            $('#add').click(function () {
+                //先判断是否有选中
+                if (!$("#select1 option").is(":selected")) {
+                    layer.msg("请选择要添加的参与者", {icon: 5});
+                }
+                //获取选中的选项，删除并追加给对方
+                else {
+                    $('#select1 option:selected').appendTo('#participator');
+                }
+            });
+
+            //移到左边
+            $('#remove').click(function () {
+                //先判断是否有选中
+                if (!$("#participator option").is(":selected")) {
+                    layer.msg("请选择需要移除的参与者", {icon: 5});
+                }
+                else {
+                    $('#participator option:selected').appendTo('#select1');
+                }
+            });
+
+            //全部移到右边
+            $('#add_all').click(function () {
+                //获取全部的选项,删除并追加给对方
+                $('#select1 option').appendTo('#participator');
+            });
+
+            //全部移到左边
+            $('#remove_all').click(function () {
+                $('#participator option').appendTo('#select1');
+            });
+
+            //双击选项
+            $('#select1').dblclick(function () { //绑定双击事件
+                //获取全部的选项,删除并追加给对方
+                $("option:selected", this).appendTo('#participator'); //追加给对方
+            });
+
+            //双击选项
+            $('#participator').dblclick(function () {
+                $("option:selected", this).appendTo('#select1');
+            });
+        });
+
+    </script>
+{% endblock %}

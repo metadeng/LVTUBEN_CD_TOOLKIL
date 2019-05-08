@@ -1,0 +1,43 @@
+{% extends 'manage_root.html' %}
+{% block body %}
+    <div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>{{ plate.name }}</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <th width="30%">导航名称</th>
+                        <td><span>{{ plate.name }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>链接前缀</td>
+                        <td>{{ plate.prefix }}</td>
+                    </tr>
+                    <tr>
+                        <td>导航摘要</td>
+                        <td>{{ plate.summary }}</td>
+                    </tr>
+                    <tr>
+                        <td>导航图标</td>
+                        <td><span><i class="{{ plate.icon }} fa-2x"></i></span></td>
+                    </tr>
+                    <tr>
+                        <td>点击量</td>
+                        <td>{{ plate.hits }}</td>
+                    </tr>
+                    <tr>
+                        <td>置顶</td>
+                        <td>{{ plate.stick }}</td>
+                    </tr>
+                    <tr>
+                        <td>导航简介</td>
+                        <td>{{ plate.note }}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+{% endblock %}

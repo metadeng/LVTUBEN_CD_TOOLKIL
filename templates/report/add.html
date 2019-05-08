@@ -1,0 +1,108 @@
+{% extends 'manage_root.html' %}
+{% block body %}
+    <div class="x-body">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label for="title" class="layui-form-label">
+                    <span class="x-red">*</span>报告标题
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="title" name="title" lay-verify="title|required"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <fieldset class="layui-elem-field site-demo-button" style="margin: 0px 40px;padding: 10px;">
+                <legend>报告内容</legend>
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <th>项目</th>
+                        <td colspan="4">
+                            <select name="modules" lay-verify="required" lay-search="">
+                                {% for p in projects %}
+                                    <option>{{ p.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <th rowspan="2">
+                            <button class="layui-btn layui-btn-sm">
+                                <i class="layui-icon">&#xe654;</i>
+                            </button>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>报告内容</th>
+                        <td>
+                            <textarea placeholder="请输入内容" class="layui-textarea"></textarea>
+                        </td>
+                        <th>已完成</th>
+                        <td>50%</td>
+                        <th>
+                            <button class="layui-btn layui-btn-sm">
+                                <i class="layui-icon">&#xe654;</i>
+                            </button>
+                        </th>
+                    </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label">
+                </label>
+                <button class="layui-btn" lay-filter="add" lay-submit="">
+                    添加
+                </button>
+            </div>
+        </form>
+    </div>
+    <script>
+        layui.use(['form', 'layer'], function () {
+            $ = layui.jquery;
+            var form = layui.form
+                , layer = layui.layer;
+
+            $('#title').val(set_title());
+
+            //监听提交
+            form.on('submit(add)', function (input) {
+                if ($('#stick').is(':checked')) {
+                    input.field.stick = true;
+                } else {
+                    input.field.stick = false;
+                }
+                //发异步，把数据提交给后台接口
+                $.ajax({
+                    url: '{% url 'manage:plate:insert' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: input.field,
+                    success: function (data) {
+                        layer.msg(data.msg, data.status ? {icon: 6} : {icon: 5}, function () {
+                            if (data.status) {
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                parent.location.reload();
+                            }
+
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+
+        function set_title() {
+            var title = '';
+            var d1 = new Date();
+            var d2 = new Date();
+            var year = d1.getFullYear();
+            d2.setMonth(0);
+            d2.setDate(1);
+            var rq = d1 - d2;
+            var s1 = Math.ceil(rq / (24 * 60 * 60 * 1000));
+            var week = Math.ceil(s1 / 7).toString();
+            title = year + '年第' + week + '周周报';
+            return title;
+        }
+    </script>
+{% endblock %}
