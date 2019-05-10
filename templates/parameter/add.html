@@ -1,0 +1,152 @@
+{% extends 'manage_root.html' %}
+{% load staticfiles %}
+{% block header-pro %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+            outline: none;
+        }
+
+        .selectbox {
+            text-align: center;
+        }
+
+        .selectbox div {
+            float: left;
+        }
+
+        .selectbox .select-bar {
+            padding: 0px;
+        }
+
+        .selectbox .select-bar select {
+            width: 190px;
+            height: 200px;
+            border: 1px #e6e6e6 solid;
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            font-size: 14px;
+            display: block;
+        }
+
+        .selectbox .select-bar select option {
+            margin: 2px auto;
+        }
+
+        .btn-bar {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .btn-bar p {
+            margin-top: 15px;
+        }
+
+        .selectbox .layui-form-select {
+            display: none;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="x-body">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label for="name" class="layui-form-label">
+                    <span class="x-red">*</span>参数名称
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name" lay-verify="name|required"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="type" class="layui-form-label">
+                    <span class="x-red">*</span>参数类型
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="type" name="type" lay-verify="type|required"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="code" class="layui-form-label">
+                    <span class="x-red">*</span>参数编码
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="code" name="code" lay-verify="code|required"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="val" class="layui-form-label">
+                    <span class="x-red">*</span>值
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="val" name="val" lay-verify="val|required"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label for="note" class="layui-form-label">
+                    备注
+                </label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入项目简介" id="note" name="note" class="layui-textarea"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label">
+                </label>
+                <button class="layui-btn" lay-filter="add" lay-submit="">
+                    添加
+                </button>
+            </div>
+        </form>
+
+    </div>
+    <script>
+        layui.use(['form', 'layer', 'laydate'], function () {
+            $ = layui.jquery;
+            var form = layui.form
+                , layer = layui.layer;
+
+            //监听提交
+            form.on('submit(add)', function (input) {
+                $.ajax({
+                    url: '{% url 'manage:parameter:insert' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: input.field,
+                    success: function (data) {
+                        layer.alert(data.msg, data.status ? {icon: 6} : {icon: 5}, function () {
+                            if (data.status) {
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                parent.location.reload();
+                            }
+                        });
+                    }
+                })
+                ;
+                return false;
+            });
+
+            var $ = layui.$, active = {};
+
+            $('.layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+        });
+
+    </script>
+{% endblock %}

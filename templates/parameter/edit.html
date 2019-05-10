@@ -1,0 +1,95 @@
+{% extends 'manage_root.html' %}
+{% block body %}
+    <div class="x-body">
+        <form class="layui-form">
+            <input type="hidden" name="sid" id="sid" value="{{ parameter.id }}">
+            <div class="layui-form-item">
+                <label for="name" class="layui-form-label">
+                    <span class="x-red">*</span>参数名称
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name" lay-verify="name|required"
+                           value="{{ parameter.name|safe }}"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="type" class="layui-form-label">
+                    <span class="x-red">*</span>参数类型
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="type" name="type" lay-verify="type|required"
+                           autocomplete="off" class="layui-input" value="{{ parameter.type|safe }}">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="code" class="layui-form-label">
+                    <span class="x-red">*</span>参数编码
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="code" name="code" lay-verify="code|required"
+                           autocomplete="off" class="layui-input" value="{{ parameter.code|safe }}">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="val" class="layui-form-label">
+                    <span class="x-red">*</span>值
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="val" name="val" lay-verify="val|required"
+                           autocomplete="off" class="layui-input" value="{{ parameter.val|safe }}">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item layui-form-text">
+                <label for="note" class="layui-form-label">
+                    备注
+                </label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入导航简介" id="note" name="note"
+                              class="layui-textarea">{{ parameter.note }}</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label">
+                </label>
+                <button class="layui-btn" lay-filter="update" lay-submit="">
+                    提交
+                </button>
+            </div>
+        </form>
+    </div>
+    <script>
+        layui.use(['form', 'layer'], function () {
+            $ = layui.jquery;
+            var form = layui.form
+                , layer = layui.layer;
+
+            //监听提交
+            form.on('submit(update)', function (input) {
+                //发异步，把数据提交给后台接口
+                $.ajax({
+                    url: '{% url 'manage:parameter:update' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: input.field,
+                    success: function (data) {
+                        layer.msg(data.msg, data.status ? {icon: 6} : {icon: 5}, function () {
+                            if (data.status) {
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                parent.location.reload();
+                            }
+
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

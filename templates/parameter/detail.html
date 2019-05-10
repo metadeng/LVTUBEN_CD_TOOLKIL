@@ -1,0 +1,39 @@
+{% extends 'manage_root.html' %}
+{% block body %}
+    <div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>{{ parameter.name }}</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <th width="30%">参数名称</th>
+                        <td><span>{{ parameter.name }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>参数类型</td>
+                        <td>{{ parameter.type }}</td>
+                    </tr>
+                    <tr>
+                        <td>参数编码</td>
+                        <td>{{ parameter.code }}</td>
+                    </tr>
+                    <tr>
+                        <td>值</td>
+                        <td>{{ parameter.val }}</td>
+                    </tr>
+                    <tr>
+                        <td>状态</td>
+                        <td>{{ parameter.status }}</td>
+                    </tr>
+                    <tr>
+                        <td>备注</td>
+                        <td>{{ parameter.note }}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+{% endblock %}
