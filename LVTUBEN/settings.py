@@ -88,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'toolkit',
         'USER': 'toolkit',
-        'PASSWORD': 'toolkit@123',
+        'PASSWORD': 'Toolkit@123',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     },

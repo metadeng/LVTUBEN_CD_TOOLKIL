@@ -74,8 +74,7 @@ def insert(request):
             status = True
             msg = '添加成功'
         except Exception as e:
-            print(e.message)
-            msg = e.message
+            msg = e
     else:
         msg = '未查询到对应导航'
     log_addition(request, toolbar, msg)
@@ -114,8 +113,7 @@ def update(request):
             status = True
             msg = '修改成功'
         except Exception as e:
-            print(e.message)
-            msg = e.message
+            msg = e
         log_change(request, toolbar, msg)
     else:
         msg = '未查询到相应工具'

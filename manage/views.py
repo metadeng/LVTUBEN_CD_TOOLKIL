@@ -318,8 +318,7 @@ def user_grant_update(request):
             status = True
             msg = '授权成功'
         except Exception as e:
-            print(e.message)
-            msg = e.message
+            msg = e
     else:
         msg = '未获取到用户信息，请稍后再试'
     log_grant(request, user, msg)
@@ -351,8 +350,7 @@ def user_update(request):
         status = True
         msg = '修改成功'
     except Exception as e:
-        print(e.message)
-        msg = e.message
+        msg = e
     log_change(request, user, msg)
     data['status'] = status
     data['msg'] = msg
@@ -401,8 +399,7 @@ def group_insert(request):
             status = True
             msg = '添加成功'
         except Exception as e:
-            print(e.message)
-            msg = e.message
+            msg = e
         log_addition(request, g, msg)
     data['status'] = status
     data['msg'] = msg
@@ -429,8 +426,7 @@ def group_update(request):
             status = True
             msg = '修改成功'
         except Exception as e:
-            print(e.message)
-            msg = e.message
+            msg = e
         log_change(request, group, msg)
     data['status'] = status
     data['msg'] = msg
@@ -460,8 +456,7 @@ def permission_insert(request):
             status = True
             msg = '添加成功'
         except Exception as e:
-            print(e.message)
-            msg = e.message
+            msg = e
         log_addition(request, p, msg)
     data['status'] = status
     data['msg'] = msg
@@ -485,8 +480,7 @@ def permission_update(request):
             status = True
             msg = '修改成功'
         except Exception as e:
-            print(e.message)
-            msg = e.message
+            msg = e
     else:
         msg = '未查询到应用，请稍后再试'
     log_change(request, p, msg)

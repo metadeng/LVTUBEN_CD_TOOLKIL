@@ -69,8 +69,7 @@ def delete(request):
         msg = '删除成功'
         status = True
     except Exception as e:
-        print(e.message)
-        msg = e.message
+        msg = e
     data['status'] = status
     data['msg'] = msg
     return HttpResponse(json.dumps(data), content_type="application/json")

@@ -67,8 +67,7 @@ def insert(request):
                 status = True
                 msg = '添加成功'
             except Exception as e:
-                print(e.message)
-                msg = e.message
+                msg = e
             log_addition(request, project, msg)
         else:
             msg = '未查询到负责人信息'
