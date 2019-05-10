@@ -107,8 +107,7 @@ def insert(request):
             msg = '添加成功'
             status = True
         except Exception as e:
-            print(e.message)
-            msg = e.message
+            msg = e
         log_addition(request, plate, msg)
     data['msg'] = msg
     data['status'] = status

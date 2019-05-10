@@ -1,11 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-Hello Parameter
+{% extends 'manage_root.html' %}
+{% load staticfiles %}
+{% block header-pro %}
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="{% static 'js/html5.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+{% endblock %}
+{% block body %}
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">参数管理</a>
+        <a>
+          <cite>参数列表</cite></a>
+      </span>
+        <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
+           href="javascript:location.replace(location.href);" title="刷新">
+            <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body operate">
+        <div class="layui-btn-group">
+            {% if perms.parameter.delete_parameter %}
+                <button class="layui-btn layui-btn-danger" data-type="getCheckData"><i class="layui-icon"></i>批量删除
+                </button>
+            {% endif %}
+            {% if perms.parameter.add_parameter %}
+                <button class="layui-btn" onclick="x_admin_show('新增参数','{% url 'manage:parameter:add' %}',800,600)"><i
+                        class="layui-icon"></i>新增参数
+                </button>
+            {% endif %}
+            <div class="layui-input-inline">
+                <input type="text" id="parameter_key" name="parameter_key" placeholder="请输入关键字"
+                       autocomplete="off" class="layui-input col-md-4" style="padding-right: 5px">
+            </div>
+            <button class="layui-btn" data-type="researchReport"><i class="fa fa-search"
+                                                                    aria-hidden="true"></i>
+            </button>
+        </div>
 
-</body>
-</html>
+        <table class="layui-hide" id="tab_parameter" lay-filter="parameter"></table>
+        <script type="text/html" id="bar_parameter">
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="detail">查看</a>
+            {% if perms.parameter.change_parameter %}
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            {% endif %}
+            {% if perms.parameter.delete_parameter %}
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            {% endif %}
+        </script>
+    </div>
+    <script>
+        layui.use('table', function () {
+            var table = layui.table;
+            var tableObj = table.render({
+                elem: '#tab_parameter'
+                , url: '{% url 'manage:parameter:parameter_list' %}'
+                , cols: [[
+                    {checkbox: true, fixed: true}
+                    , {field: 'name', title: '参数名称'}
+                    , {field: 'type', title: '参数类型'}
+                    , {field: 'code', title: '参数编码'}
+                    , {field: 'val', title: '值'}
+                    , {field: 'note', title: '备注'}
+                    , {field: 'create_time', title: '创建时间'}
+                    , {field: 'update_time', title: '更新时间'}
+                    , {field: 'status', title: '状态'}
+                    , {field: 'right', title: '操作', align: 'center', toolbar: '#bar_parameter'}
+                ]]
+                , id: 'parameter_table'
+                , page: true
+                , height: 'full-335'
+                , loading: false
+            });
+
+            table.on('tool(parameter)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'detail') {
+                    x_admin_show('参数详情', 'detail/' + data.id, 800, 600)
+                } else if (obj.event === 'del') {
+                    var sids = [data.id];
+                    del_parameter(tableObj, sids);
+
+                } else if (obj.event === 'edit') {
+                    x_admin_show('编辑参数', 'edit/' + data.id, 800, 600);
+                }
+            });
+
+            var $ = layui.$, active = {
+                getCheckData: function () {
+                    var checkStatus = table.checkStatus('parameter_table')
+                        , data = checkStatus.data;
+                    if (data.length == 0) {
+                        layer.msg('您还没选择哟！', {icon: 5});
+                    } else {
+                        var sids = [];
+                        for (var i = 0; i < data.length; i++) {
+                            sids.push(data[i].id);
+                        }
+                        del_parameter(tableObj, sids);
+                    }
+                },
+                researchReport: function () {
+                    var key = $('#parameter_key').val();
+                    tableObj.reload({
+                        where: {
+                            key: key
+                        }
+                    })
+                }
+            };
+
+            $('.operate .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        });
+
+        function del_parameter(tableObj, sids) {
+            layer.confirm('真的删除吗？', function (index) {
+                $.ajax({
+                    url: '{% url 'manage:parameter:delete' %}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {'sids[]': sids},
+                    success: function (data) {
+                        layer.msg(data.msg, data.status ? {icon: 6} : {icon: 5});
+                        tableObj.reload();
+                    }
+                });
+            });
+        }
+
+    </script>
+{% endblock %}
