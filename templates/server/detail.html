@@ -1,0 +1,35 @@
+{% extends 'manage_root.html' %}
+{% block body %}
+    <div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>{{ server.ip }}</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <th width="30%">IP地址</th>
+                        <td><span>{{ server.ip }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>操作系统</td>
+                        <td>{{ server.os }}</td>
+                    </tr>
+                    <tr>
+                        <td>用户名</td>
+                        <td>{{ server.username }}</td>
+                    </tr>
+                    <tr>
+                        <td>密码</td>
+                        <td>{{ server.password }}</td>
+                    </tr>
+                    <tr>
+                        <td>SSH连接端口</td>
+                        <td>{{ server.ssh_port }}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+{% endblock %}
