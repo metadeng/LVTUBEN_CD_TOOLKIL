@@ -3,3 +3,5 @@
 *.pyc
 
 !*/migrations/__init__.py
+
+LVTUBEN/settings.py
